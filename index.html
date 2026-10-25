@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CopyCheck - Class IX-C DPS Rudrapur</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      background-color: #f1f5f9;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-slide-up {
+      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-700">
+
+  <!-- Outer wrapper centers the mobile frame on desktop screens -->
+  <div class="min-h-screen flex justify-center bg-slate-200/70 md:py-6">
+    
+    <!-- Mobile App Container -->
+    <div class="w-full max-w-md bg-slate-50 min-h-screen md:min-h-[840px] md:max-h-[92vh] md:rounded-3xl md:shadow-2xl md:border md:border-slate-200/80 flex flex-col relative overflow-hidden">
+      
+      <!-- Top App Bar / Header -->
+      <header class="bg-indigo-600 text-white pt-4 pb-3 px-4 shadow-md z-20 sticky top-0">
+        <div class="flex items-center justify-between mb-2.5">
+          <div class="flex items-center space-x-2">
+            <div class="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center text-white shadow-inner flex-shrink-0">
+              <i class="fa-solid fa-book-open-reader text-lg"></i>
+            </div>
+            <div class="min-w-0">
+              <h1 class="font-bold text-base leading-tight tracking-tight flex items-center gap-1.5">
+                CopyCheck
+                <span class="text-[10px] font-semibold uppercase tracking-wider bg-indigo-500/80 px-2 py-0.5 rounded-full border border-indigo-400/40">DPS Rudrapur</span>
+              </h1>
+              <p class="text-[10px] text-indigo-100 opacity-90 truncate">Class IX-C (38) • vaibhav.bhatt@dpsrudrapur.com</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <button onclick="syncToGoogleDrive(false)" id="driveSyncBtn" title="Sync to Google Drive (vaibhav.bhatt@dpsrudrapur.com)" class="px-2 h-8 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold text-[10px] active:scale-95 flex items-center gap-1 shadow-xs transition">
+              <i class="fa-brands fa-google-drive"></i>
+              <span id="driveSyncText">Drive</span>
+            </button>
+            <button onclick="loadFromGoogleDrive()" title="Load Latest Data from Google Drive" class="w-7 h-8 rounded-lg bg-indigo-500/50 hover:bg-indigo-500 text-white active:scale-95 flex items-center justify-center transition">
+              <i class="fa-solid fa-cloud-arrow-down text-xs"></i>
+            </button>
+            <button onclick="exportCurrentClassCSV()" title="Export CSV Report (with 3-Mark Score)" class="w-7 h-8 rounded-lg bg-indigo-500/50 hover:bg-indigo-500 active:scale-95 flex items-center justify-center transition">
+              <i class="fa-solid fa-file-csv text-xs"></i>
+            </button>
+            <button onclick="openClearDataModal()" title="Cloud Settings, Backup & Clear Data" class="w-7 h-8 rounded-lg bg-rose-500/80 hover:bg-rose-500 text-white active:scale-95 flex items-center justify-center transition shadow-xs">
+              <i class="fa-solid fa-gear text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Class Selector Dropdown & Cloud Status Bar -->
+        <div class="space-y-1.5">
+          <div class="relative">
+            <select id="classSelector" onchange="handleClassChange(this.value)" class="w-full bg-indigo-700/80 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl px-3.5 py-2 pr-9 appearance-none border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-white/40 transition cursor-pointer shadow-inner">
+              <!-- Populated by JS -->
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-indigo-200">
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+          </div>
+          <div class="flex items-center justify-between px-1 text-[10px] text-indigo-100/90">
+            <span id="driveStatusIndicator" class="flex items-center gap-1 truncate">
+              <span id="driveStatusDot" class="w-1.5 h-1.5 rounded-full bg-amber-300"></span>
+              <span id="driveStatusLabel">Auto-Sync: Local Storage (Tap Gear to link Drive URL)</span>
+            </span>
+            <button onclick="openClearDataModal()" class="underline font-semibold hover:text-white whitespace-nowrap ml-2">Cloud Setup</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Scrollable Content Area -->
+      <main id="mainContent" class="flex-1 overflow-y-auto pb-24 px-4 pt-4 space-y-5 no-scrollbar">
+        
+        <!-- ==================== TAB 1: SCHEDULE & DASHBOARD ==================== -->
+        <section id="tab-schedule" class="space-y-5 animate-fade-in">
+          
+          <!-- Quick Stats Row -->
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Sessions</span>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statTotalSessions" class="text-2xl font-bold text-slate-800">0</span>
+                <span class="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-calendar-check"></i>
+                </span>
+              </div>
+            </div>
+
+            <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Checked</span>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statAvgChecked" class="text-2xl font-bold text-emerald-600">0%</span>
+                <span class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-check-double"></i>
+                </span>
+              </div>
+            </div>
+
+            <div onclick="switchTab('history', 'defaulters')" class="bg-white p-3 rounded-2xl shadow-sm border border-rose-100 flex flex-col justify-between cursor-pointer active:scale-95 transition">
+              <span class="text-[11px] font-medium text-rose-500 uppercase tracking-wider">Defaulters</span>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statDefaultersCount" class="text-2xl font-bold text-rose-600">0</span>
+                <span class="w-6 h-6 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA Button to Schedule New Copy Check -->
+          <button onclick="openNewScheduleModal()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold py-3.5 px-4 rounded-2xl shadow-md shadow-indigo-200 flex items-center justify-center space-x-2 active:scale-[0.99] transition">
+            <i class="fa-solid fa-plus-circle text-base"></i>
+            <span class="text-sm">Schedule New Copy Correction</span>
+          </button>
+
+          <!-- Defaulter Alert Banner -->
+          <div id="defaulterBanner" class="hidden bg-amber-50 border border-amber-200/80 rounded-2xl p-3.5 flex items-start space-x-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <i class="fa-solid fa-bell text-sm"></i>
+            </div>
+            <div class="flex-1 text-xs text-amber-900">
+              <p class="font-semibold text-amber-950" id="defaulterBannerTitle">Attention Needed</p>
+              <p class="mt-0.5 text-amber-800/90 leading-relaxed" id="defaulterBannerDesc">Some students haven't had their notebooks checked in recent sessions.</p>
+              <button onclick="switchTab('history', 'defaulters')" class="mt-1.5 font-semibold text-amber-900 underline inline-flex items-center gap-1">
+                View Defaulters List <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Upcoming / Active Copy Check Sessions -->
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i class="fa-solid fa-clock text-indigo-500"></i> Active & Upcoming Schedules
+              </h2>
+              <span id="upcomingCountBadge" class="text-[11px] font-semibold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="upcomingSchedulesList" class="space-y-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Past Copy Check Sessions -->
+          <div>
+            <div class="flex items-center justify-between mb-2.5 pt-2">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Past Copy Check Sessions
+              </h2>
+              <span id="pastCountBadge" class="text-[11px] font-semibold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="pastSchedulesList" class="space-y-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB 2: QUICK CHECK COPIES ==================== -->
+        <section id="tab-check" class="hidden space-y-4 animate-fade-in">
+          
+          <!-- Active Session Selector Card -->
+          <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <div class="flex items-center justify-between">
+              <label for="checkSessionSelect" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Select Scheduled Session
+              </label>
+              <button onclick="openNewScheduleModal()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                <i class="fa-solid fa-plus text-[10px]"></i> New Schedule
+              </button>
+            </div>
+
+            <div class="relative">
+              <select id="checkSessionSelect" onchange="handleSelectCheckSession(this.value)" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <!-- Populated by JS -->
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
+
+            <!-- Session Metadata & Progress Bar -->
+            <div id="checkSessionMeta" class="pt-1 space-y-2">
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                <span id="checkSessionBatchInfo" class="font-medium text-slate-600">All Roll Numbers</span>
+                <span id="checkSessionProgressText" class="font-semibold text-indigo-600">0 / 0 Marked</span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex">
+                <div id="barChecked" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+                <div id="barIncomplete" class="bg-amber-400 h-full transition-all duration-300" style="width: 0%"></div>
+                <div id="barMissing" class="bg-rose-500 h-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+              <!-- Status Mini Legend -->
+              <div class="flex items-center justify-between pt-1 text-[11px] text-slate-500">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Checked: <strong id="countChecked" class="text-slate-700">0</strong></span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Incomplete: <strong id="countIncomplete" class="text-slate-700">0</strong></span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Missed: <strong id="countMissing" class="text-slate-700">0</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search, Filter & Bulk Actions Bar -->
+          <div class="space-y-2.5">
+            <div class="flex gap-2">
+              <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="checkSearchInput" oninput="renderCheckStudentList()" placeholder="Search student, roll no, or adm no..." class="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              </div>
+              <button onclick="markAllInBatchChecked()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-xl shadow-sm flex items-center gap-1.5 whitespace-nowrap active:scale-95 transition">
+                <i class="fa-solid fa-check-double"></i> Mark All Checked
+              </button>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+              <button onclick="setCheckFilter('batch')" id="filterBtn-batch" class="check-filter-btn text-xs font-medium px-3 py-1.5 rounded-full bg-indigo-600 text-white whitespace-nowrap transition">
+                Target Batch
+              </button>
+              <button onclick="setCheckFilter('all')" id="filterBtn-all" class="check-filter-btn text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap transition">
+                Full Class (38)
+              </button>
+              <button onclick="setCheckFilter('unmarked')" id="filterBtn-unmarked" class="check-filter-btn text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap transition">
+                Pending
+              </button>
+              <button onclick="setCheckFilter('checked')" id="filterBtn-checked" class="check-filter-btn text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap transition">
+                Checked
+              </button>
+              <button onclick="setCheckFilter('incomplete')" id="filterBtn-incomplete" class="check-filter-btn text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap transition">
+                Incomplete
+              </button>
+              <button onclick="setCheckFilter('missing')" id="filterBtn-missing" class="check-filter-btn text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap transition">
+                Not Submitted
+              </button>
+            </div>
+          </div>
+
+          <!-- Student Copy Check Cards List -->
+          <div id="checkStudentsContainer" class="space-y-2.5">
+            <!-- Populated by JS -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB 3: STUDENT HISTORY & ANALYTICS (WITH 3-MARK SCORE) ==================== -->
+        <section id="tab-history" class="hidden space-y-4 animate-fade-in">
+          
+          <!-- Search and Sort Controls -->
+          <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-600 flex items-center gap-1.5">
+                <i class="fa-solid fa-award"></i> Copy Correction Marks (Out of 3.0)
+              </span>
+              <span class="text-[10px] text-slate-400">Checked=100% • Part=50%</span>
+            </div>
+
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" id="historySearchInput" oninput="renderStudentHistoryList()" placeholder="Search student name, roll no, or adm no..." class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <button onclick="setHistoryFilter('all')" id="histFilter-all" class="text-xs font-medium px-3 py-1.5 rounded-full bg-indigo-600 text-white whitespace-nowrap transition">
+                  All (38)
+                </button>
+                <button onclick="setHistoryFilter('defaulters')" id="histFilter-defaulters" class="text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap flex items-center gap-1 transition">
+                  <i class="fa-solid fa-triangle-exclamation text-rose-500 text-[10px]"></i> Defaulters
+                </button>
+                <button onclick="setHistoryFilter('regular')" id="histFilter-regular" class="text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap transition">
+                  3.0 / 3.0 Score
+                </button>
+              </div>
+
+              <select id="historySortSelect" onchange="renderStudentHistoryList()" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium rounded-xl px-2.5 py-1.5 focus:outline-none">
+                <option value="roll">Sort: Roll No</option>
+                <option value="score_desc">Highest Marks (/3)</option>
+                <option value="score_asc">Lowest Marks (/3)</option>
+                <option value="checked_desc">Most Checked</option>
+                <option value="missed_desc">Most Missed</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Student History Cards -->
+          <div id="studentHistoryContainer" class="space-y-2.5">
+            <!-- Populated by JS -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB 4: MANAGE CLASS ROSTER (38 STUDENTS) ==================== -->
+        <section id="tab-roster" class="hidden space-y-4 animate-fade-in">
+          
+          <!-- Roster Header Card -->
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-sm font-bold text-slate-800">Class IX-C Official Roster</h2>
+                <p class="text-[11px] text-slate-500">DPS Rudrapur • Roll 1 to 38 Loaded</p>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="forceSync38Roster()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-semibold px-2.5 py-2 rounded-xl flex items-center gap-1 active:scale-95 transition">
+                  <i class="fa-solid fa-rotate text-[10px]"></i> Sync 38
+                </button>
+                <button onclick="openAddStudentModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1.5 shadow-sm active:scale-95 transition">
+                  <i class="fa-solid fa-user-plus text-[10px]"></i> Add
+                </button>
+              </div>
+            </div>
+
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" id="rosterSearchInput" oninput="renderRosterList()" placeholder="Filter 38 students by name, roll, adm no, or parent..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <!-- Data Management / Cloud & Clear Data Actions -->
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-medium text-slate-500 flex items-center gap-1.5">
+                <i class="fa-brands fa-google-drive text-emerald-600"></i> Drive & Data Controls
+              </span>
+              <button onclick="openClearDataModal()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1.5 active:scale-95 transition">
+                <i class="fa-solid fa-cloud-arrow-up text-[11px]"></i> Drive Setup / Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Roster List -->
+          <div id="rosterListContainer" class="space-y-2">
+            <!-- Populated by JS -->
+          </div>
+
+        </section>
+
+        <!-- ==================== TAB 5: FORTNIGHTLY PARENT REPORTS ==================== -->
+        <section id="tab-reports" class="hidden space-y-4 animate-fade-in">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0"><i class="fa-brands fa-whatsapp text-xl"></i></div>
+              <div class="flex-1">
+                <h2 class="text-sm font-bold text-slate-800">Fortnightly Parent Reports</h2>
+                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Review each student's report (including their 3-mark internal score), then open WhatsApp with a ready-to-send message.</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label for="reportStartDate" class="block text-[11px] font-semibold text-slate-600 mb-1">From</label><input id="reportStartDate" type="date" class="w-full px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" onchange="renderParentReports()"></div>
+              <div><label for="reportEndDate" class="block text-[11px] font-semibold text-slate-600 mb-1">To</label><input id="reportEndDate" type="date" class="w-full px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" onchange="renderParentReports()"></div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="setFortnightReportDates()" class="flex-1 py-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 font-semibold text-xs"><i class="fa-solid fa-calendar-week mr-1"></i> Last 14 Days</button>
+              <button onclick="renderParentReports()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs"><i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh Reports</button>
+            </div>
+            <div id="parentReportSummary" class="rounded-xl bg-slate-50 border border-slate-100 p-3 text-xs text-slate-600">Choose a date range to prepare reports.</div>
+          </div>
+          <div id="parentReportsList" class="space-y-3"></div>
+          <div class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-[11px] leading-relaxed text-amber-900"><strong>Before sending:</strong> check the date range, confirm each parent's WhatsApp number is correct, and review the message. WhatsApp opens a chat with the message prefilled; you must press Send yourself.</div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Bar -->
+      <nav class="bg-white border-t border-slate-200/80 px-1 py-1.5 flex justify-around items-center z-20 sticky bottom-0 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+        <button onclick="switchTab('schedule')" id="nav-schedule" class="nav-btn flex-1 py-1.5 flex flex-col items-center justify-center text-indigo-600 transition">
+          <i class="fa-solid fa-calendar-days text-base mb-0.5"></i>
+          <span class="text-[10px] font-semibold">Schedule</span>
+        </button>
+        <button onclick="switchTab('check')" id="nav-check" class="nav-btn flex-1 py-1.5 flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition">
+          <i class="fa-solid fa-clipboard-check text-base mb-0.5"></i>
+          <span class="text-[10px] font-semibold">Check Copies</span>
+        </button>
+        <button onclick="switchTab('history')" id="nav-history" class="nav-btn flex-1 py-1.5 flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition">
+          <i class="fa-solid fa-chart-line text-base mb-0.5"></i>
+          <span class="text-[10px] font-semibold">Marks (/3)</span>
+        </button>
+        <button onclick="switchTab('roster')" id="nav-roster" class="nav-btn flex-1 py-1.5 flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition">
+          <i class="fa-solid fa-users text-base mb-0.5"></i>
+          <span class="text-[10px] font-semibold">Class (38)</span>
+        </button>
+        <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn flex-1 py-1.5 flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 transition">
+          <i class="fa-brands fa-whatsapp text-base mb-0.5"></i>
+          <span class="text-[10px] font-semibold">Reports</span>
+        </button>
+      </nav>
+
+      <!-- ==================== MODAL 1: SCHEDULE NEW COPY CHECK ==================== -->
+      <div id="scheduleModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 shadow-2xl space-y-4 animate-slide-up max-h-[90vh] overflow-y-auto">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="font-bold text-base text-slate-800">Schedule Copy Correction</h3>
+              <p class="text-xs text-slate-400">Class IX-C • DPS Rudrapur</p>
+            </div>
+            <button onclick="closeScheduleModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Chapter / Copy Check Title *</label>
+              <input type="text" id="schedTitleInput" placeholder="e.g., Ch 8: Force & Laws of Motion Notes" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Scheduled Date *</label>
+                <input type="date" id="schedDateInput" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Notebook Type</label>
+                <select id="schedTypeInput" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="Classwork / Notes">CW / Notes Copy</option>
+                  <option value="Homework / Exercise">HW / Assignment</option>
+                  <option value="Lab Manual / Practical">Practical File</option>
+                  <option value="Worksheet / Portfolio">Portfolio / Test</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Roll Number Batch Presets for 38 Students -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">Target Roll Number Batch (38 Students)</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="selectBatchPreset('Full Class (Roll 1-38)', 1, 38)" id="preset-full" class="batch-preset-btn text-left p-2.5 rounded-xl border border-indigo-600 bg-indigo-50/70 text-indigo-900 transition">
+                  <div class="text-xs font-bold">Full Class (1–38)</div>
+                  <div class="text-[10px] text-indigo-600">All 38 Students</div>
+                </button>
+                <button type="button" onclick="selectBatchPreset('Batch 1 (Roll 1-13)', 1, 13)" id="preset-b1" class="batch-preset-btn text-left p-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 transition">
+                  <div class="text-xs font-bold">Batch 1 (Roll 1–13)</div>
+                  <div class="text-[10px] text-slate-400">Aakhya to Anugrah</div>
+                </button>
+                <button type="button" onclick="selectBatchPreset('Batch 2 (Roll 14-26)', 14, 26)" id="preset-b2" class="batch-preset-btn text-left p-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 transition">
+                  <div class="text-xs font-bold">Batch 2 (Roll 14–26)</div>
+                  <div class="text-[10px] text-slate-400">Apeksha to Krishna</div>
+                </button>
+                <button type="button" onclick="selectBatchPreset('Batch 3 (Roll 27-38)', 27, 38)" id="preset-b3" class="batch-preset-btn text-left p-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 transition">
+                  <div class="text-xs font-bold">Batch 3 (Roll 27–38)</div>
+                  <div class="text-[10px] text-slate-400">Peehu to Zyna Arif</div>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-1">
+              <div>
+                <label class="block text-[11px] font-medium text-slate-500 mb-1">From Roll No.</label>
+                <input type="number" id="schedStartRoll" value="1" min="1" max="38" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold">
+              </div>
+              <div>
+                <label class="block text-[11px] font-medium text-slate-500 mb-1">To Roll No.</label>
+                <input type="number" id="schedEndRoll" value="38" min="1" max="38" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold">
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2.5 pt-2">
+            <button onclick="closeScheduleModal()" class="flex-1 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50">
+              Cancel
+            </button>
+            <button onclick="saveNewSchedule()" class="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-200">
+              Create Schedule
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MODAL 2: STUDENT DETAIL & HISTORY TIMELINE ==================== -->
+      <div id="studentDetailModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 shadow-2xl space-y-4 animate-slide-up max-h-[90vh] flex flex-col">
+          <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-3">
+              <div id="detailStudentRollBadge" class="w-11 h-11 rounded-2xl bg-indigo-600 text-white font-bold text-base flex items-center justify-center shadow-sm">
+                #1
+              </div>
+              <div>
+                <h3 id="detailStudentName" class="font-bold text-base text-slate-800 leading-tight">Student Name</h3>
+                <p id="detailStudentMeta" class="text-xs text-slate-500 mt-0.5">Adm No: 3964 • Class IX-C</p>
+              </div>
+            </div>
+            <button onclick="closeStudentDetailModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Parent & Academic Info Box -->
+          <div id="detailParentCard" class="bg-slate-50 rounded-2xl p-3 border border-slate-200/70 text-xs space-y-2">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Summary Mini Counters (4 Columns with 3-Mark Score) -->
+          <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="bg-indigo-50 border border-indigo-200 p-2 rounded-xl">
+              <div id="detailCopyMarkScore" class="text-base font-bold text-indigo-700">N/A</div>
+              <div class="text-[9px] font-bold uppercase text-indigo-600">Marks (/3)</div>
+            </div>
+            <div class="bg-emerald-50 border border-emerald-100 p-2 rounded-xl">
+              <div id="detailCountChecked" class="text-base font-bold text-emerald-700">0</div>
+              <div class="text-[9px] font-semibold uppercase text-emerald-600">Checked</div>
+            </div>
+            <div class="bg-amber-50 border border-amber-100 p-2 rounded-xl">
+              <div id="detailCountIncomplete" class="text-base font-bold text-amber-700">0</div>
+              <div class="text-[9px] font-semibold uppercase text-amber-600">Part</div>
+            </div>
+            <div class="bg-rose-50 border border-rose-100 p-2 rounded-xl">
+              <div id="detailCountMissing" class="text-base font-bold text-rose-700">0</div>
+              <div class="text-[9px] font-semibold uppercase text-rose-600">Missed</div>
+            </div>
+          </div>
+
+          <!-- Date-wise Check Timeline -->
+          <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="detailTimelineContainer">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MODAL 3: REMARK / NOTE DRAWER ==================== -->
+      <div id="remarkModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 shadow-2xl space-y-4 animate-slide-up">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="font-bold text-sm text-slate-800" id="remarkModalTitle">Add Copy Remark</h3>
+              <p class="text-[11px] text-slate-400" id="remarkModalSubtitle">Select quick tags or type a custom note</p>
+            </div>
+            <button onclick="closeRemarkModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Quick Remark Chips -->
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="appendQuickRemark('Neat & Complete Work')" class="text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">+ Neat & Complete</button>
+            <button type="button" onclick="appendQuickRemark('Index Incomplete')" class="text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">+ Index Incomplete</button>
+            <button type="button" onclick="appendQuickRemark('Diagrams Missing')" class="text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">+ Diagrams Missing</button>
+            <button type="button" onclick="appendQuickRemark('Numerical Steps Incomplete')" class="text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">+ Numerical Steps</button>
+            <button type="button" onclick="appendQuickRemark('Copy Not Brought')" class="text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">+ Copy Not Brought</button>
+            <button type="button" onclick="appendQuickRemark('Parent Signature Needed')" class="text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200">+ Parent Sign Needed</button>
+          </div>
+
+          <textarea id="remarkInputText" rows="3" placeholder="Enter teacher remark for this notebook check..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+
+          <div class="flex gap-2">
+            <button onclick="closeRemarkModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs">Cancel</button>
+            <button onclick="saveStudentRemark()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs">Save Remark</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MODAL 4: ADD / EDIT STUDENT ==================== -->
+      <div id="addStudentModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 shadow-2xl space-y-4 animate-slide-up">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 class="font-bold text-sm text-slate-800">Add Student to Class IX-C</h3>
+            <button onclick="closeAddStudentModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Roll No *</label>
+                <input type="number" id="newStudentRoll" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Admission No</label>
+                <input type="text" id="newStudentAdm" placeholder="e.g., 4501" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Student Full Name *</label>
+              <input type="text" id="newStudentName" placeholder="Full Name" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Father's Name</label>
+                <input type="text" id="newStudentFather" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Parent Contact No</label>
+                <input type="text" id="newStudentPhone" placeholder="10-digit mobile" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button onclick="closeAddStudentModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs">Cancel</button>
+            <button onclick="saveNewStudent()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs">Add Student</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MODAL 5: GOOGLE DRIVE SYNC, BACKUP & CLEAR DATA ==================== -->
+      <div id="clearDataModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 shadow-2xl space-y-4 animate-slide-up max-h-[92vh] overflow-y-auto">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <i class="fa-brands fa-google-drive text-base"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm text-slate-800">Google Drive Sync & Data Controls</h3>
+                <p class="text-[11px] text-slate-400">Account: vaibhav.bhatt@dpsrudrapur.com</p>
+              </div>
+            </div>
+            <button onclick="closeClearDataModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Google Drive Web App URL Configuration Box -->
+          <div class="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3.5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i> Google Apps Script Web App URL
+              </span>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-200/70 text-emerald-900">Auto-Sync ON (3s)</span>
+            </div>
+            <p class="text-[11px] text-emerald-800/90 leading-relaxed">
+              Paste your deployed Google Apps Script URL below. Every time you mark a copy, it will automatically back up to your Drive and update your Google Sheet.
+            </p>
+            <input type="url" id="driveWebAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 bg-white border border-emerald-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <div class="grid grid-cols-3 gap-2 pt-1">
+              <button onclick="saveDriveWebAppUrl()" class="py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs">
+                <i class="fa-solid fa-check mr-1"></i> Save URL
+              </button>
+              <button onclick="syncToGoogleDrive(false)" class="py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs">
+                <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Sync Now
+              </button>
+              <button onclick="loadFromGoogleDrive()" class="py-2 rounded-xl bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-100 font-semibold text-xs">
+                <i class="fa-solid fa-cloud-arrow-down mr-1"></i> Pull Drive
+              </button>
+            </div>
+          </div>
+
+          <!-- Data safety: full-fidelity local JSON backup and restore -->
+          <div class="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-3.5 space-y-2.5">
+            <div class="flex items-start gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-shield-halved text-xs"></i>
+              </div>
+              <div>
+                <div class="font-bold text-xs text-indigo-950">Offline File Backup & Restore</div>
+                <p class="text-[11px] text-indigo-800/90 mt-0.5 leading-relaxed">Download or restore a local JSON file containing all schedules, marks, and remarks.</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="exportFullBackup()" class="py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700">
+                <i class="fa-solid fa-download mr-1"></i> Download Backup
+              </button>
+              <button onclick="document.getElementById('backupFileInput').click()" class="py-2.5 rounded-xl border border-indigo-300 bg-white text-indigo-700 font-semibold text-xs hover:bg-indigo-100">
+                <i class="fa-solid fa-upload mr-1"></i> Restore Backup
+              </button>
+            </div>
+            <input id="backupFileInput" type="file" accept=".json,application/json" class="hidden" onchange="importFullBackup(event)">
+          </div>
+
+          <div class="space-y-2 pt-1 border-t border-slate-100">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Reset / Clear Options</p>
+            <!-- Option 1: Clear All Schedules & Copy Check History Only (Keep 38 Students) -->
+            <button onclick="clearAllSchedulesAndHistory()" class="w-full text-left p-3 rounded-2xl border border-rose-200 bg-rose-50/60 hover:bg-rose-100/70 transition flex items-start gap-3 group">
+              <div class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                <i class="fa-solid fa-broom text-xs"></i>
+              </div>
+              <div class="flex-1">
+                <div class="font-bold text-xs text-rose-950">Clear All Copy Check History & Schedules</div>
+                <p class="text-[11px] text-rose-700/90 mt-0.5 leading-relaxed">
+                  Deletes all scheduled sessions, checked marks, and remarks so you can start fresh. Keeps all 38 Class IX-C students intact.
+                </p>
+              </div>
+            </button>
+
+            <!-- Option 2: Clear Only Marks inside Current Selected Session -->
+            <button onclick="clearCurrentSessionMarks()" class="w-full text-left p-3 rounded-2xl border border-amber-200 bg-amber-50/60 hover:bg-amber-100/70 transition flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                <i class="fa-solid fa-eraser text-xs"></i>
+              </div>
+              <div class="flex-1">
+                <div class="font-bold text-xs text-amber-950">Reset Marks in Current Session Only</div>
+                <p class="text-[11px] text-amber-800/90 mt-0.5 leading-relaxed">
+                  Unmarks all students (Checked / Part / Missed) in the currently active session while keeping other sessions.
+                </p>
+              </div>
+            </button>
+
+            <!-- Option 3: Factory Reset to Demo State -->
+            <button onclick="factoryResetApp()" class="w-full text-left p-3 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-slate-700 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                <i class="fa-solid fa-rotate-left text-xs"></i>
+              </div>
+              <div class="flex-1">
+                <div class="font-bold text-xs text-slate-800">Restore Default Demo Data (38 Students)</div>
+                <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                  Resets local storage and restores the 3 sample schedules along with the official 38-student roster.
+                </p>
+              </div>
+            </button>
+          </div>
+
+          <button onclick="closeClearDataModal()" class="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50">
+            Close
+          </button>
+        </div>
+      </div>
+
+      <!-- Toast Notification -->
+      <div id="toastNotification" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMessage">Saved!</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'dps_ixc_copy_tracker_v38_final';
+    const DRIVE_URL_STORAGE_KEY = 'dps_ixc_google_drive_webapp_url';
+
+    // You can either paste your Google Apps Script URL right here OR paste it inside the app's Cloud Setup modal:
+    const DEFAULT_GOOGLE_DRIVE_WEBAPP_URL = "";
+
+    function getDriveWebAppUrl() {
+      return (localStorage.getItem(DRIVE_URL_STORAGE_KEY) || DEFAULT_GOOGLE_DRIVE_WEBAPP_URL || '').trim();
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>\"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;'
+      }[ch]));
+    }
+
+    function getLocalDateISO(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Complete 38-student roster extracted from the DPS Rudrapur Term-I Report Cards (Roll 1 to 38)
+    const OFFICIAL_IXC_38_STUDENTS = [
+      { id: 's1', roll: 1, admNo: '3964', name: 'AAKHYA SHARMA', father: 'VIVEK SHARMA', mother: 'SWATI SHARMA', phone: '9997436888', sciMarks: '90 (A2)', pct: '92.5%' },
+      { id: 's2', roll: 2, admNo: '556', name: 'AARAV CHOUDHARY', father: 'HARENDRA CHOUDHARY', mother: 'RICHA CHOUDHARY', phone: '8958539345', sciMarks: '93 (A1)', pct: '94.12%' },
+      { id: 's3', roll: 3, admNo: '4056', name: 'AARAV SINGH AITHANI', father: 'GANESH SINGH', mother: 'MEENA DEVI', phone: '8800887356', sciMarks: '90 (A2)', pct: '87.0%' },
+      { id: 's4', roll: 4, admNo: '993', name: 'AARYAN RAJ', father: 'SUSHIL KUMAR', mother: 'REKHA DEVI', phone: '9639011797', sciMarks: '87 (A2)', pct: '92.25%' },
+      { id: 's5', roll: 5, admNo: '4422', name: 'ABHIGYAN PRAKASH', father: 'CHANDRA PRAKASH', mother: 'RENU KUMARI', phone: '6398850983', sciMarks: '73 (B1)', pct: '76.67%' },
+      { id: 's6', roll: 6, admNo: '715', name: 'ADITYA DEOPA', father: 'LAXMAN SINGH DEOPA', mother: 'PUSHPA DEOPA', phone: '7351980016', sciMarks: '52 (C1)', pct: '50.5%' },
+      { id: 's7', roll: 7, admNo: '4240', name: 'ADITYA PANDEY', father: 'B.D PANDEY', mother: 'RITA PANDEY', phone: '7830636408', sciMarks: '75 (B1)', pct: '82.0%' },
+      { id: 's8', roll: 8, admNo: '4435', name: 'ADITYA SINGH CHAUHAN', father: 'NA', mother: 'SONIYA CHAUHAN', phone: '7302622630', sciMarks: '91 (A1)', pct: '93.42%' },
+      { id: 's9', roll: 9, admNo: '700', name: 'AGAM SINGH BATTH', father: 'ARSHJIT SINGH', mother: 'RAJWANT KAUR', phone: '7455086613', sciMarks: '68 (B2)', pct: '69.12%' },
+      { id: 's10', roll: 10, admNo: '3828', name: 'ALSHIFA KHAN', father: 'JARAFUDADIN', mother: 'JEENAT', phone: '9837170519', sciMarks: '55 (C1)', pct: '70.12%' },
+      { id: 's11', roll: 11, admNo: '4430', name: 'ANANYA SAHU', father: 'SURENDRA KUMAR SAHU', mother: 'ANURADHA SAHU', phone: '9794953025', sciMarks: 'NA', pct: '16.9%' },
+      { id: 's12', roll: 12, admNo: '4084', name: 'ANANYA SINGH', father: 'HARSH VARDHAN SINGH', mother: 'KHUSHBOO GUPTA', phone: '9568156556', sciMarks: '45 (C2)', pct: '71.62%' },
+      { id: 's13', roll: 13, admNo: '3318', name: 'ANUGRAH DUBEY', father: 'VIKASH DUBEY', mother: 'RASHMI DUBEY', phone: '9411333255', sciMarks: '88 (A2)', pct: '91.38%' },
+      { id: 's14', roll: 14, admNo: '3589', name: 'APEKSHA ADHIKARI', father: 'KRISHANA SINGH ADHIKARI', mother: 'MAMTA ADHIKARI', phone: '7500447744', sciMarks: '91 (A1)', pct: '94.67%' },
+      { id: 's15', roll: 15, admNo: '132', name: 'ARIMA MITTAL', father: 'ANKUR MITTAL', mother: 'ANJU MITTAL', phone: '9760180000', sciMarks: '90 (A2)', pct: '90.83%' },
+      { id: 's16', roll: 16, admNo: '319', name: 'ARNAV JAIN', father: 'GOPAL JAIN', mother: 'ANSHIKA JAIN', phone: '9837592930', sciMarks: '87 (A2)', pct: '91.75%' },
+      { id: 's17', roll: 17, admNo: '4361', name: 'ATIKSH SINHA', father: 'RAJNISH KUMAR SINHA', mother: 'SWTI SINHA', phone: '7903831732', sciMarks: '71 (B1)', pct: '75.35%' },
+      { id: 's18', roll: 18, admNo: '3351', name: 'AVIKA', father: 'DEEPAK BHATT', mother: 'SEEMA BHATT', phone: '6006418126', sciMarks: '94 (A1)', pct: '93.25%' },
+      { id: 's19', roll: 19, admNo: '4331', name: 'CHINMOY SAWARAN', father: 'KISLAY KUMAR', mother: 'NITA', phone: '9910478835', sciMarks: '99 (A1)', pct: '89.0%' },
+      { id: 's20', roll: 20, admNo: '433', name: 'DEVANG AGRAWAL', father: 'AMIT AGRAWAL', mother: 'PARUL AGRAWAL', phone: '8445777999', sciMarks: '84 (A2)', pct: '83.38%' },
+      { id: 's21', roll: 21, admNo: '2683', name: 'DIVYANSHI RAUTELA', father: 'DHYAN SINGH RAUTELA', mother: 'MONIKA RAUTELA', phone: '8191837777', sciMarks: '87 (A2)', pct: '91.12%' },
+      { id: 's22', roll: 22, admNo: '1105', name: 'GURVIRAJ SINGH', father: 'AMANDEEP SINGH', mother: 'NAVJOT KAUR', phone: '9837758210', sciMarks: '85 (A2)', pct: '84.5%' },
+      { id: 's23', roll: 23, admNo: '3397', name: 'ISHAN JANTWAL', father: 'UTTAM SINGH', mother: 'DEEPA JANTWAL', phone: '9012297817', sciMarks: '76 (B1)', pct: '84.62%' },
+      { id: 's24', roll: 24, admNo: '837', name: 'KARTIKEYA SINGH ADHIKARI', father: 'KUNDAN SINGH', mother: 'GEETA ADHIKARI', phone: '9719445139', sciMarks: '81 (A2)', pct: '80.38%' },
+      { id: 's25', roll: 25, admNo: '2531', name: 'KRISHA CHAUHAN', father: 'PRATAP SINGH', mother: 'BIMLA CHAUHAN', phone: '8826512635', sciMarks: '76 (B1)', pct: '86.1%' },
+      { id: 's26', roll: 26, admNo: '645', name: 'KRISHNA KORANGA', father: 'LOKPAL SINGH', mother: 'BEENA DEVI', phone: '7668617846', sciMarks: '67 (B2)', pct: '78.0%' },
+      { id: 's27', roll: 27, admNo: '21', name: 'PEEHU JAISWAL', father: 'ASHOK KUMAR', mother: 'KANCHAN JAISWAL', phone: '7017682804', sciMarks: '93 (A1)', pct: '83.62%' },
+      { id: 's28', roll: 28, admNo: '1558', name: 'PIYUSH AGRAWAL', father: 'MANISH AGRAWAL', mother: 'AISHA AGRAWAL', phone: '8126065000', sciMarks: '84 (A2)', pct: '80.88%' },
+      { id: 's29', roll: 29, admNo: '1698', name: 'SANVI MAURYA', father: 'SURESH KUMAR MAURYA', mother: 'SONI MAURYA', phone: '7906140698', sciMarks: '93 (A1)', pct: '94.62%' },
+      { id: 's30', roll: 30, admNo: '276', name: 'SARTHAK JAIN', father: 'NARENDRA SETHI JAIN', mother: 'USHA NARENDRA JAIN', phone: '9639110267', sciMarks: '52 (C1)', pct: '76.72%' },
+      { id: 's31', roll: 31, admNo: '4330', name: 'SHAURYA PRATAP SINGH', father: 'L.UPENDRA KUMAR SINGH', mother: 'ANCHAL SINGH', phone: '6395550619', sciMarks: '74 (B1)', pct: '80.13%' },
+      { id: 's32', roll: 32, admNo: '2434', name: 'TRIGYA GOYAL', father: 'DEEPAK KUMAR GOYAL', mother: 'SANJANA GOYAL', phone: '9412088493', sciMarks: '70 (B2)', pct: '83.38%' },
+      { id: 's33', roll: 33, admNo: '2686', name: 'UDAYVEER RAUTELA', father: 'DEVENDRA SINGH RAUTELA', mother: 'BABITA RAUTELA', phone: '8650499337', sciMarks: '72 (B1)', pct: '85.75%' },
+      { id: 's34', roll: 34, admNo: '661', name: 'VACHI CHAUHAN', father: 'DEEPAK CHAUHAN', mother: 'REENA CHAUHAN', phone: '8791062878', sciMarks: '99 (A1)', pct: '96.75%' },
+      { id: 's35', roll: 35, admNo: '195', name: 'VEDANT KUMAR', father: 'SUSHIL KUMAR', mother: 'SWATI', phone: '9411111022', sciMarks: '55 (C1)', pct: '60.12%' },
+      { id: 's36', roll: 36, admNo: '557', name: 'VISHAL BHANDARI', father: 'KUNDAN SINGH BHANDARI', mother: 'MOHANI BHANDARI', phone: '8449045069', sciMarks: '70 (B2)', pct: '79.75%' },
+      { id: 's37', roll: 37, admNo: '1718', name: 'VIVEK BORA', father: 'RAJENDER BORA', mother: 'DEEPIKA SINGH', phone: '9837871919', sciMarks: '75 (B1)', pct: '83.62%' },
+      { id: 's38', roll: 38, admNo: '548', name: 'ZYNA ARIF', father: 'M. MOBIN ARIF', mother: 'SHAFAQUE NAAZ', phone: '8755076076', sciMarks: '87 (A2)', pct: '91.62%' }
+    ];
+
+    let appState = {
+      activeClassId: 'ix-c-sci',
+      activeTab: 'schedule',
+      selectedSessionId: null,
+      checkFilter: 'batch',
+      historyFilter: 'all',
+      activeRemarkStudentId: null,
+      selectedBatchLabel: 'Full Class (Roll 1-38)',
+      classes: []
+    };
+
+    function createInitialState() {
+      const today = getLocalDateISO();
+      const records1 = {};
+      const records2 = {};
+
+      OFFICIAL_IXC_38_STUDENTS.forEach(st => {
+        if (st.roll <= 13) {
+          records1[st.id] = {
+            status: st.roll === 6 || st.roll === 11 ? 'missing' : (st.roll === 9 ? 'incomplete' : 'checked'),
+            checkedAt: '2026-10-10',
+            remark: st.roll === 6 ? 'Copy not submitted' : (st.roll === 9 ? 'Exercise Q4-Q8 pending' : 'Checked & verified')
+          };
+        }
+        if (st.roll >= 14 && st.roll <= 26) {
+          records2[st.id] = {
+            status: st.roll === 26 ? 'incomplete' : 'checked',
+            checkedAt: '2026-10-14',
+            remark: st.roll === 26 ? 'Diagrams missing' : 'Neat work'
+          };
+        }
+      });
+
+      return [
+        {
+          id: 'ix-c-sci',
+          name: 'Class IX-C • Science / Physics (38 Students)',
+          subject: 'Science / Physics',
+          students: JSON.parse(JSON.stringify(OFFICIAL_IXC_38_STUDENTS)),
+          schedules: [
+            {
+              id: 'sched-1',
+              title: 'Ch 8: Force & Laws of Motion (Notes + Intext)',
+              date: '2026-10-10',
+              type: 'Classwork / Notes',
+              batchLabel: 'Batch 1 (Roll 1-13)',
+              startRoll: 1,
+              endRoll: 13,
+              records: records1
+            },
+            {
+              id: 'sched-2',
+              title: 'Ch 9: Gravitation & Free Fall Numericals',
+              date: '2026-10-14',
+              type: 'Homework / Exercise',
+              batchLabel: 'Batch 2 (Roll 14-26)',
+              startRoll: 14,
+              endRoll: 26,
+              records: records2
+            },
+            {
+              id: 'sched-3',
+              title: 'Ch 10: Work & Energy Complete Copy Check',
+              date: today,
+              type: 'Classwork / Notes',
+              batchLabel: 'Batch 3 (Roll 27-38)',
+              startRoll: 27,
+              endRoll: 38,
+              records: {}
+            }
+          ]
+        }
+      ];
+    }
+
+    function loadState() {
+      let raw = null;
+      try {
+        raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed) && parsed[0]?.students?.length >= 38) {
+            appState.classes = parsed;
+            return;
+          }
+          try { localStorage.setItem(STORAGE_KEY + '_recovery_backup', raw); } catch (_) {}
+          showToast('Saved data looked invalid. A recovery copy was kept before defaults loaded.');
+        }
+      } catch (e) {
+        console.error('Failed to load state:', e);
+        if (raw) {
+          try { localStorage.setItem(STORAGE_KEY + '_recovery_backup', raw); } catch (_) {}
+        }
+        showToast('Could not read saved data. A recovery copy was attempted before defaults loaded.');
+      }
+      appState.classes = createInitialState();
+      saveState(true);
+    }
+
+    // Saves locally and triggers automatic 3-second debounced background sync to Google Drive
+    function saveState(skipCloudSync = false) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.classes));
+
+        if (!skipCloudSync && getDriveWebAppUrl()) {
+          updateDriveStatusUI('pending', 'Changes queued for Google Drive auto-sync...');
+          clearTimeout(window._driveSyncTimer);
+          window._driveSyncTimer = setTimeout(() => {
+            syncToGoogleDrive(true); // silent background sync
+          }, 3000);
+        }
+      } catch (e) {
+        console.error('Failed to save state:', e);
+        showToast('Could not save data. Export a backup and free browser storage.');
+      }
+    }
+
+    function updateDriveStatusUI(state, message) {
+      const dot = document.getElementById('driveStatusDot');
+      const label = document.getElementById('driveStatusLabel');
+      const btnText = document.getElementById('driveSyncText');
+      if (!dot || !label) return;
+
+      if (state === 'synced') {
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+        label.textContent = message || 'Synced to vaibhav.bhatt@dpsrudrapur.com Drive';
+        if (btnText) btnText.textContent = 'Saved ✓';
+        setTimeout(() => { if (btnText) btnText.textContent = 'Drive'; }, 2200);
+      } else if (state === 'syncing') {
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping';
+        label.textContent = message || 'Syncing to Google Drive...';
+        if (btnText) btnText.textContent = 'Syncing..';
+      } else if (state === 'pending') {
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-300';
+        label.textContent = message || 'Auto-syncing in 3s...';
+      } else if (state === 'error') {
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-400';
+        label.textContent = message || 'Drive sync offline (Saved locally)';
+        if (btnText) btnText.textContent = 'Retry';
+      } else {
+        const hasUrl = Boolean(getDriveWebAppUrl());
+        dot.className = hasUrl ? 'w-1.5 h-1.5 rounded-full bg-emerald-400' : 'w-1.5 h-1.5 rounded-full bg-amber-300';
+        label.textContent = hasUrl
+          ? 'Auto-Sync Active: vaibhav.bhatt@dpsrudrapur.com'
+          : 'Auto-Sync: Local Storage (Tap Cloud Setup to link Drive)';
+      }
+    }
+
+    window.saveDriveWebAppUrl = function() {
+      const input = document.getElementById('driveWebAppUrlInput');
+      const url = (input?.value || '').trim();
+      if (!url) {
+        localStorage.removeItem(DRIVE_URL_STORAGE_KEY);
+        updateDriveStatusUI('idle');
+        showToast('Cleared Google Drive Web App URL.');
+        return;
+      }
+      localStorage.setItem(DRIVE_URL_STORAGE_KEY, url);
+      updateDriveStatusUI('idle');
+      showToast('Google Drive URL saved! Syncing now...');
+      syncToGoogleDrive(false);
+    };
+
+    // 1. Push complete app data + 3-Mark Sheet rows to vaibhav.bhatt@dpsrudrapur.com Drive
+    window.syncToGoogleDrive = async function(silent = false) {
+      const url = getDriveWebAppUrl();
+      if (!url) {
+        if (!silent) {
+          openClearDataModal();
+          showToast('Paste your Google Apps Script Web App URL first!');
+        }
+        return;
+      }
+
+      updateDriveStatusUI('syncing', 'Syncing with vaibhav.bhatt@dpsrudrapur.com...');
+
+      try {
+        const cls = getCurrentClass();
+        const sheetRows = [
+          ['Roll No', 'Adm No', 'Student Name', 'Father Name', 'Phone', 'Checked', 'Incomplete', 'Missed', 'Copy Marks (Out of 3)', 'Last Checked Date']
+        ];
+
+        cls.students.forEach(st => {
+          const stats = getStudentStats(st, cls.schedules);
+          const copyMark = getCopyCorrectionMarks(stats);
+          sheetRows.push([
+            st.roll, st.admNo, st.name, st.father, st.phone,
+            stats.checked, stats.incomplete, stats.missing,
+            copyMark, stats.lastCheckedDate || 'Never'
+          ]);
+        });
+
+        const payload = {
+          app: 'CopyCheck',
+          owner: 'vaibhav.bhatt@dpsrudrapur.com',
+          updatedAt: new Date().toISOString(),
+          classes: appState.classes,
+          sheetRows: sheetRows
+        };
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+          const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+          updateDriveStatusUI('synced', `Auto-synced to Drive at ${timeStr}`);
+          if (!silent) showToast('Synced to vaibhav.bhatt@dpsrudrapur.com Drive!');
+        } else {
+          throw new Error(result.message || 'Drive script returned an error');
+        }
+      } catch (err) {
+        console.error('Drive Sync Failed:', err);
+        updateDriveStatusUI('error', 'Drive sync failed (Saved locally)');
+        if (!silent) showToast('Drive sync failed. Saved locally—check URL or internet.');
+      }
+    };
+
+    // 2. Pull data back from Google Drive
+    window.loadFromGoogleDrive = async function() {
+      const url = getDriveWebAppUrl();
+      if (!url) {
+        openClearDataModal();
+        showToast('Please paste your Google Apps Script URL first!');
+        return;
+      }
+
+      updateDriveStatusUI('syncing', 'Loading from Google Drive...');
+      showToast('Fetching latest data from Google Drive...');
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data && Array.isArray(data.classes) && validateBackupClasses(data.classes)) {
+          appState.classes = data.classes;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.classes));
+          const cls = getCurrentClass();
+          if (cls?.schedules?.length) {
+            appState.selectedSessionId = cls.schedules[cls.schedules.length - 1].id;
+          }
+          renderAll();
+          updateDriveStatusUI('synced', 'Loaded latest data from Google Drive');
+          showToast('Loaded latest data from Google Drive!');
+        } else if (data.status === 'empty') {
+          updateDriveStatusUI('idle');
+          showToast('No backup in Drive yet. Tap Drive to upload first!');
+        } else {
+          throw new Error('Invalid Drive payload');
+        }
+      } catch (err) {
+        console.error('Drive Load Failed:', err);
+        updateDriveStatusUI('error', 'Could not load from Drive');
+        showToast('Could not load from Drive. Check internet connection.');
+      }
+    };
+
+    window.forceSync38Roster = function() {
+      const cls = getCurrentClass();
+      if (!cls) return;
+      const existingByRoll = {};
+      (cls.students || []).forEach(s => { existingByRoll[s.roll] = s; });
+
+      cls.students = OFFICIAL_IXC_38_STUDENTS.map(official => {
+        const prev = existingByRoll[official.roll];
+        return {
+          ...official,
+          id: prev ? prev.id : official.id
+        };
+      });
+
+      saveState();
+      renderAll();
+      showToast('Synced all 38 students of Class IX-C!');
+    };
+
+    function getCurrentClass() {
+      return appState.classes.find(c => c.id === appState.activeClassId) || appState.classes[0];
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastMessage');
+      if (!toast || !text) return;
+      text.textContent = msg;
+      toast.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2200);
+    }
+
+    function formatDateReadable(dateStr) {
+      if (!dateStr) return '—';
+      const d = new Date(dateStr + 'T00:00:00');
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    window.switchTab = function(tabName, subFilter) {
+      appState.activeTab = tabName;
+      ['schedule', 'check', 'history', 'roster', 'reports'].forEach(t => {
+        const sec = document.getElementById('tab-' + t);
+        const nav = document.getElementById('nav-' + t);
+        if (sec) sec.classList.toggle('hidden', t !== tabName);
+        if (nav) {
+          nav.classList.toggle('text-indigo-600', t === tabName);
+          nav.classList.toggle('text-slate-400', t !== tabName);
+        }
+      });
+
+      if (tabName === 'history' && subFilter) {
+        setHistoryFilter(subFilter);
+      } else {
+        renderAll();
+      }
+    };
+
+    window.handleClassChange = function(classId) {
+      appState.activeClassId = classId;
+      const cls = getCurrentClass();
+      if (cls.schedules.length > 0) {
+        appState.selectedSessionId = cls.schedules[cls.schedules.length - 1].id;
+      }
+      renderAll();
+    };
+
+    function getStudentStats(student, schedules) {
+      let checked = 0, incomplete = 0, missing = 0;
+      let lastCheckedDate = null;
+      const timeline = [];
+
+      schedules.forEach(sched => {
+        const inBatch = student.roll >= sched.startRoll && student.roll <= sched.endRoll;
+        const rec = sched.records ? sched.records[student.id] : null;
+        if (rec && rec.status) {
+          if (rec.status === 'checked') {
+            checked++;
+            const d = rec.checkedAt || sched.date;
+            if (!lastCheckedDate || d > lastCheckedDate) lastCheckedDate = d;
+          } else if (rec.status === 'incomplete') {
+            incomplete++;
+          } else if (rec.status === 'missing') {
+            missing++;
+          }
+          timeline.push({
+            schedId: sched.id,
+            title: sched.title,
+            schedDate: sched.date,
+            checkedAt: rec.checkedAt || sched.date,
+            status: rec.status,
+            remark: rec.remark || ''
+          });
+        } else if (inBatch) {
+          timeline.push({
+            schedId: sched.id,
+            title: sched.title,
+            schedDate: sched.date,
+            checkedAt: null,
+            status: 'unmarked',
+            remark: ''
+          });
+        }
+      });
+
+      return { checked, incomplete, missing, lastCheckedDate, timeline };
+    }
+
+    // Automated 3-Mark Internal Assessment Calculation
+    // Full credit (1.0) for Checked, Half credit (0.5) for Incomplete, 0 for Missed
+    function getCopyCorrectionMarks(stats) {
+      const total = stats.checked + stats.incomplete + stats.missing;
+      if (total === 0) return "N/A";
+      const earned = stats.checked + (stats.incomplete * 0.5);
+      const rawScore = (earned / total) * 3;
+      return (Math.round(rawScore * 10) / 10).toFixed(1);
+    }
+
+    function getNumericCopyScore(stats) {
+      const val = getCopyCorrectionMarks(stats);
+      return val === "N/A" ? -1 : parseFloat(val);
+    }
+
+    function renderClassSelector() {
+      const sel = document.getElementById('classSelector');
+      if (!sel) return;
+      sel.innerHTML = appState.classes.map(c =>
+        `<option value="${c.id}" ${c.id === appState.activeClassId ? 'selected' : ''}>${escapeHTML(c.name)}</option>`
+      ).join('');
+    }
+
+    function renderScheduleTab() {
+      const cls = getCurrentClass();
+      const schedules = cls.schedules || [];
+      const today = getLocalDateISO();
+
+      let totalPossible = 0, totalChecked = 0;
+      schedules.forEach(s => {
+        Object.values(s.records || {}).forEach(r => {
+          totalPossible++;
+          if (r.status === 'checked') totalChecked++;
+        });
+      });
+      const avgPct = totalPossible > 0 ? Math.round((totalChecked / totalPossible) * 100) : 0;
+
+      let defaultersCount = 0;
+      cls.students.forEach(st => {
+        const stats = getStudentStats(st, schedules);
+        if (stats.missing > 0 || stats.incomplete > 0) defaultersCount++;
+      });
+
+      document.getElementById('statTotalSessions').textContent = schedules.length;
+      document.getElementById('statAvgChecked').textContent = avgPct + '%';
+      document.getElementById('statDefaultersCount').textContent = defaultersCount;
+
+      const banner = document.getElementById('defaulterBanner');
+      if (defaultersCount > 0) {
+        banner.classList.remove('hidden');
+        document.getElementById('defaulterBannerTitle').textContent = `${defaultersCount} Student(s) Have Pending / Missed Copies`;
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      const upcoming = schedules.filter(s => s.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+      const past = schedules.filter(s => s.date < today).sort((a, b) => b.date.localeCompare(a.date));
+
+      document.getElementById('upcomingCountBadge').textContent = upcoming.length;
+      document.getElementById('pastCountBadge').textContent = past.length;
+
+      document.getElementById('upcomingSchedulesList').innerHTML = upcoming.length
+        ? upcoming.map(s => renderScheduleCardHTML(s, cls)).join('')
+        : `<div class="bg-white p-4 rounded-2xl border border-slate-100 text-center text-xs text-slate-400">No upcoming copy checks scheduled. Tap above to schedule one!</div>`;
+
+      document.getElementById('pastSchedulesList').innerHTML = past.length
+        ? past.map(s => renderScheduleCardHTML(s, cls)).join('')
+        : `<div class="bg-white p-4 rounded-2xl border border-slate-100 text-center text-xs text-slate-400">No past sessions yet.</div>`;
+    }
+
+    function renderScheduleCardHTML(sched, cls) {
+      const targetStudents = cls.students.filter(st => st.roll >= sched.startRoll && st.roll <= sched.endRoll);
+      let checked = 0, incomplete = 0, missing = 0;
+      targetStudents.forEach(st => {
+        const r = sched.records?.[st.id];
+        if (r?.status === 'checked') checked++;
+        else if (r?.status === 'incomplete') incomplete++;
+        else if (r?.status === 'missing') missing++;
+      });
+      const total = targetStudents.length || 1;
+      const pct = Math.round(((checked + incomplete + missing) / total) * 100);
+
+      return `
+        <div class="bg-white p-3.5 rounded-2xl shadow-xs border border-slate-100 space-y-2.5">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-600 mb-1">
+                ${escapeHTML(sched.batchLabel || `Roll ${sched.startRoll}–${sched.endRoll}`)}
+              </span>
+              <h3 class="font-bold text-sm text-slate-800 leading-snug">${escapeHTML(sched.title)}</h3>
+              <p class="text-[11px] text-slate-400 mt-0.5">
+                <i class="fa-regular fa-calendar mr-1"></i>${formatDateReadable(sched.date)} • ${escapeHTML(sched.type)}
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="openSessionForChecking('${sched.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-xl shadow-xs active:scale-95 transition whitespace-nowrap">
+                Check Copies
+              </button>
+              <button onclick="deleteScheduleSession('${sched.id}')" title="Delete Session" class="w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center active:scale-95 transition">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px] text-slate-500">
+              <span>Checked: <strong class="text-emerald-600">${checked}</strong> | Part: <strong class="text-amber-600">${incomplete}</strong> | Missed: <strong class="text-rose-600">${missing}</strong></span>
+              <span class="font-semibold text-slate-700">${checked + incomplete + missing}/${targetStudents.length}</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="bg-emerald-500 h-full transition-all" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    window.openSessionForChecking = function(schedId) {
+      appState.selectedSessionId = schedId;
+      appState.checkFilter = 'batch';
+      switchTab('check');
+    };
+
+    window.handleSelectCheckSession = function(schedId) {
+      appState.selectedSessionId = schedId;
+      renderCheckTab();
+    };
+
+    window.setCheckFilter = function(filter) {
+      appState.checkFilter = filter;
+      document.querySelectorAll('.check-filter-btn').forEach(btn => {
+        const active = btn.id === 'filterBtn-' + filter;
+        btn.className = active
+          ? 'check-filter-btn text-xs font-medium px-3 py-1.5 rounded-full bg-indigo-600 text-white whitespace-nowrap transition'
+          : 'check-filter-btn text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap transition';
+      });
+      renderCheckStudentList();
+    };
+
+    function renderCheckTab() {
+      const cls = getCurrentClass();
+      const schedules = cls.schedules || [];
+      if (!appState.selectedSessionId && schedules.length > 0) {
+        appState.selectedSessionId = schedules[schedules.length - 1].id;
+      }
+
+      const sel = document.getElementById('checkSessionSelect');
+      sel.innerHTML = schedules.map(s =>
+        `<option value="${s.id}" ${s.id === appState.selectedSessionId ? 'selected' : ''}>${formatDateReadable(s.date)} — ${escapeHTML(s.title)} (${escapeHTML(s.batchLabel)})</option>`
+      ).join('');
+
+      renderCheckStudentList();
+    }
+
+    window.renderCheckStudentList = function() {
+      const cls = getCurrentClass();
+      const sched = cls.schedules.find(s => s.id === appState.selectedSessionId);
+      const container = document.getElementById('checkStudentsContainer');
+      if (!sched) {
+        container.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-xs text-slate-400">No session selected. Please create a schedule first.</div>`;
+        return;
+      }
+
+      const batchStudents = cls.students.filter(st => st.roll >= sched.startRoll && st.roll <= sched.endRoll);
+      let cChecked = 0, cInc = 0, cMiss = 0;
+      batchStudents.forEach(st => {
+        const stStatus = sched.records?.[st.id]?.status;
+        if (stStatus === 'checked') cChecked++;
+        else if (stStatus === 'incomplete') cInc++;
+        else if (stStatus === 'missing') cMiss++;
+      });
+
+      const totalBatch = batchStudents.length || 1;
+      document.getElementById('checkSessionBatchInfo').textContent = `${sched.batchLabel} (Roll ${sched.startRoll}–${sched.endRoll})`;
+      document.getElementById('checkSessionProgressText').textContent = `${cChecked + cInc + cMiss} / ${batchStudents.length} Marked`;
+      document.getElementById('countChecked').textContent = cChecked;
+      document.getElementById('countIncomplete').textContent = cInc;
+      document.getElementById('countMissing').textContent = cMiss;
+
+      document.getElementById('barChecked').style.width = `${(cChecked / totalBatch) * 100}%`;
+      document.getElementById('barIncomplete').style.width = `${(cInc / totalBatch) * 100}%`;
+      document.getElementById('barMissing').style.width = `${(cMiss / totalBatch) * 100}%`;
+
+      const query = (document.getElementById('checkSearchInput')?.value || '').trim().toLowerCase();
+      let list = cls.students.slice().sort((a, b) => a.roll - b.roll);
+
+      if (appState.checkFilter === 'batch') {
+        list = list.filter(st => st.roll >= sched.startRoll && st.roll <= sched.endRoll);
+      } else if (appState.checkFilter === 'unmarked') {
+        list = list.filter(st => !sched.records?.[st.id]?.status);
+      } else if (['checked', 'incomplete', 'missing'].includes(appState.checkFilter)) {
+        list = list.filter(st => sched.records?.[st.id]?.status === appState.checkFilter);
+      }
+
+      if (query) {
+        list = list.filter(st =>
+          st.name.toLowerCase().includes(query) ||
+          String(st.roll).includes(query) ||
+          String(st.admNo).toLowerCase().includes(query)
+        );
+      }
+
+      container.innerHTML = list.map(st => {
+        const rec = sched.records?.[st.id] || {};
+        const status = rec.status || null;
+        const remark = rec.remark || '';
+
+        const btnDone = status === 'checked'
+          ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-emerald-50';
+        const btnPart = status === 'incomplete'
+          ? 'bg-amber-500 text-white border-amber-500 shadow-xs'
+          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-amber-50';
+        const btnMiss = status === 'missing'
+          ? 'bg-rose-600 text-white border-rose-600 shadow-xs'
+          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-rose-50';
+
+        return `
+          <div class="bg-white p-3 rounded-2xl shadow-xs border border-slate-100 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <div onclick="openStudentDetailModal('${st.id}')" class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                  #${st.roll}
+                </div>
+                <div class="truncate">
+                  <h4 class="font-bold text-xs text-slate-800 truncate">${escapeHTML(st.name)}</h4>
+                  <p class="text-[10px] text-slate-400">Adm: ${escapeHTML(st.admNo)} • Sci: ${escapeHTML(st.sciMarks)}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1">
+                <button onclick="markStudentCopy('${st.id}', 'checked')" class="px-2.5 py-1.5 rounded-xl border text-[11px] font-bold transition active:scale-95 ${btnDone}">
+                  <i class="fa-solid fa-check mr-0.5"></i> Done
+                </button>
+                <button onclick="markStudentCopy('${st.id}', 'incomplete')" class="px-2.5 py-1.5 rounded-xl border text-[11px] font-bold transition active:scale-95 ${btnPart}">
+                  Part
+                </button>
+                <button onclick="markStudentCopy('${st.id}', 'missing')" class="px-2.5 py-1.5 rounded-xl border text-[11px] font-bold transition active:scale-95 ${btnMiss}">
+                  Miss
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1 border-t border-slate-50 text-[11px]">
+              <button onclick="openRemarkModal('${st.id}')" class="text-slate-400 hover:text-indigo-600 flex items-center gap-1 truncate max-w-[75%]">
+                <i class="fa-regular fa-comment-dots"></i>
+                <span class="${remark ? 'text-indigo-600 font-medium' : ''}">${escapeHTML(remark || 'Add remark / note...')}</span>
+              </button>
+              ${rec.checkedAt ? `<span class="text-[10px] text-slate-400">Checked: ${formatDateReadable(rec.checkedAt)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+
+    window.markStudentCopy = function(studentId, status) {
+      const cls = getCurrentClass();
+      const sched = cls.schedules.find(s => s.id === appState.selectedSessionId);
+      if (!sched) return;
+      if (!sched.records) sched.records = {};
+
+      const existing = sched.records[studentId];
+      const today = getLocalDateISO();
+
+      if (existing && existing.status === status) {
+        delete sched.records[studentId];
+      } else {
+        sched.records[studentId] = {
+          status: status,
+          checkedAt: today,
+          remark: existing?.remark || ''
+        };
+      }
+
+      saveState(); // Saves locally + queues automatic 3s Drive sync
+      renderCheckStudentList();
+    };
+
+    window.markAllInBatchChecked = function() {
+      const cls = getCurrentClass();
+      const sched = cls.schedules.find(s => s.id === appState.selectedSessionId);
+      if (!sched) return;
+      if (!sched.records) sched.records = {};
+
+      const today = getLocalDateISO();
+      cls.students.forEach(st => {
+        if (st.roll >= sched.startRoll && st.roll <= sched.endRoll) {
+          sched.records[st.id] = {
+            status: 'checked',
+            checkedAt: today,
+            remark: sched.records[st.id]?.remark || 'Checked'
+          };
+        }
+      });
+
+      saveState();
+      renderCheckStudentList();
+      showToast('All students in batch marked Checked!');
+    };
+
+    window.setHistoryFilter = function(filter) {
+      appState.historyFilter = filter;
+      ['all', 'defaulters', 'regular'].forEach(f => {
+        const btn = document.getElementById('histFilter-' + f);
+        if (!btn) return;
+        btn.className = f === filter
+          ? 'text-xs font-medium px-3 py-1.5 rounded-full bg-indigo-600 text-white whitespace-nowrap transition'
+          : 'text-xs font-medium px-3 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 whitespace-nowrap transition';
+      });
+      renderStudentHistoryList();
+    };
+
+    window.renderStudentHistoryList = function() {
+      const cls = getCurrentClass();
+      const query = (document.getElementById('historySearchInput')?.value || '').trim().toLowerCase();
+      const sortBy = document.getElementById('historySortSelect')?.value || 'roll';
+
+      let rows = cls.students.map(st => ({
+        student: st,
+        stats: getStudentStats(st, cls.schedules)
+      }));
+
+      if (appState.historyFilter === 'defaulters') {
+        rows = rows.filter(r => r.stats.missing > 0 || r.stats.incomplete > 0);
+      } else if (appState.historyFilter === 'regular') {
+        rows = rows.filter(r => r.stats.checked > 0 && r.stats.missing === 0 && r.stats.incomplete === 0);
+      }
+
+      if (query) {
+        rows = rows.filter(r =>
+          r.student.name.toLowerCase().includes(query) ||
+          String(r.student.roll).includes(query) ||
+          String(r.student.admNo).toLowerCase().includes(query)
+        );
+      }
+
+      if (sortBy === 'roll') rows.sort((a, b) => a.student.roll - b.student.roll);
+      else if (sortBy === 'score_desc') rows.sort((a, b) => getNumericCopyScore(b.stats) - getNumericCopyScore(a.stats));
+      else if (sortBy === 'score_asc') rows.sort((a, b) => getNumericCopyScore(a.stats) - getNumericCopyScore(b.stats));
+      else if (sortBy === 'checked_desc') rows.sort((a, b) => b.stats.checked - a.stats.checked);
+      else if (sortBy === 'missed_desc') rows.sort((a, b) => b.stats.missing - a.stats.missing);
+
+      const container = document.getElementById('studentHistoryContainer');
+      container.innerHTML = rows.map(({ student, stats }) => {
+        const copyMark = getCopyCorrectionMarks(stats);
+        const scoreBadge = copyMark !== "N/A"
+          ? `<span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md text-[10px] font-bold">Score: ${copyMark}/3</span>`
+          : `<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-md text-[10px] font-medium">No Marks Yet</span>`;
+
+        return `
+          <div onclick="openStudentDetailModal('${student.id}')" class="bg-white p-3.5 rounded-2xl shadow-xs border border-slate-100 flex items-center justify-between gap-3 cursor-pointer hover:border-indigo-200 transition">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                #${student.roll}
+              </div>
+              <div class="truncate">
+                <div class="flex items-center gap-1.5">
+                  <h4 class="font-bold text-xs text-slate-800 truncate">${escapeHTML(student.name)}</h4>
+                  ${scoreBadge}
+                </div>
+                <p class="text-[10px] text-slate-400 mt-0.5">
+                  Last Checked: <strong class="text-slate-600">${stats.lastCheckedDate ? formatDateReadable(stats.lastCheckedDate) : 'Not yet'}</strong>
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-[11px]" title="Times Checked">
+                ${stats.checked} <i class="fa-solid fa-check text-[9px]"></i>
+              </span>
+              ${stats.incomplete > 0 ? `<span class="px-2 py-1 rounded-lg bg-amber-50 text-amber-700 font-bold text-[11px]">${stats.incomplete} P</span>` : ''}
+              ${stats.missing > 0 ? `<span class="px-2 py-1 rounded-lg bg-rose-50 text-rose-700 font-bold text-[11px]">${stats.missing} M</span>` : ''}
+              <i class="fa-solid fa-chevron-right text-slate-300 text-xs ml-1"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+
+    window.renderRosterList = function() {
+      const cls = getCurrentClass();
+      const query = (document.getElementById('rosterSearchInput')?.value || '').trim().toLowerCase();
+      let list = cls.students.slice().sort((a, b) => a.roll - b.roll);
+
+      if (query) {
+        list = list.filter(st =>
+          st.name.toLowerCase().includes(query) ||
+          String(st.roll).includes(query) ||
+          String(st.admNo).toLowerCase().includes(query) ||
+          (st.father || '').toLowerCase().includes(query)
+        );
+      }
+
+      const container = document.getElementById('rosterListContainer');
+      container.innerHTML = list.map(st => {
+        const stats = getStudentStats(st, cls.schedules);
+        const copyMark = getCopyCorrectionMarks(stats);
+        return `
+          <div onclick="openStudentDetailModal('${st.id}')" class="bg-white p-3 rounded-2xl shadow-xs border border-slate-100 flex items-center justify-between gap-2 cursor-pointer hover:border-indigo-200 transition">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                #${st.roll}
+              </div>
+              <div class="truncate">
+                <h4 class="font-bold text-xs text-slate-800 truncate">${escapeHTML(st.name)}</h4>
+                <p class="text-[10px] text-slate-500 truncate">Adm: ${escapeHTML(st.admNo)} • F: ${escapeHTML(st.father)} • ${escapeHTML(st.phone)}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-[10px] font-bold px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 whitespace-nowrap">
+                ${copyMark === 'N/A' ? '—/3' : `${copyMark}/3`}
+              </span>
+              <span class="text-[10px] font-semibold px-2 py-1 rounded-lg bg-slate-100 text-slate-700 whitespace-nowrap">
+                Sci: ${escapeHTML(st.sciMarks)}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+
+    window.openStudentDetailModal = function(studentId) {
+      const cls = getCurrentClass();
+      const st = cls.students.find(s => s.id === studentId);
+      if (!st) return;
+
+      const stats = getStudentStats(st, cls.schedules);
+      const copyMark = getCopyCorrectionMarks(stats);
+
+      document.getElementById('detailStudentRollBadge').textContent = '#' + st.roll;
+      document.getElementById('detailStudentName').textContent = st.name;
+      document.getElementById('detailStudentMeta').innerHTML = `
+        Adm No: ${escapeHTML(st.admNo)} • Class IX-C • Term-I Sci: ${escapeHTML(st.sciMarks)}<br>
+        <span class="text-indigo-600 font-bold mt-0.5 inline-block">Copy Correction Assessment: ${copyMark === 'N/A' ? 'Not Graded' : `${copyMark} / 3.0 Marks`}</span>
+      `;
+
+      const waText = encodeURIComponent(
+        `Dear Parent (${st.father}), Namaste from DPS Rudrapur. Copy check update for ${st.name} (Class IX-C, Roll ${st.roll}): Checked ${stats.checked} time(s), Incomplete ${stats.incomplete}, Not Submitted ${stats.missing}. Current Copy Correction Score: ${copyMark}/3.`
+      );
+
+      document.getElementById('detailParentCard').innerHTML = `
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-slate-500">Father: <strong class="text-slate-800">${escapeHTML(st.father || '—')}</strong></p>
+            <p class="text-slate-500">Mother: <strong class="text-slate-800">${escapeHTML(st.mother || '—')}</strong></p>
+            <p class="text-slate-500">Contact: <strong class="text-indigo-600">${escapeHTML(st.phone || '—')}</strong></p>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <a href="tel:${st.phone}" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold text-[11px] flex items-center gap-1.5 shadow-xs">
+              <i class="fa-solid fa-phone text-[10px]"></i> Call
+            </a>
+            <a href="https://wa.me/91${st.phone}?text=${waText}" target="_blank" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-semibold text-[11px] flex items-center gap-1.5 shadow-xs">
+              <i class="fa-brands fa-whatsapp text-xs"></i> WhatsApp
+            </a>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('detailCopyMarkScore').textContent = copyMark === 'N/A' ? '—' : `${copyMark}/3`;
+      document.getElementById('detailCountChecked').textContent = stats.checked;
+      document.getElementById('detailCountIncomplete').textContent = stats.incomplete;
+      document.getElementById('detailCountMissing').textContent = stats.missing;
+
+      const timelineEl = document.getElementById('detailTimelineContainer');
+      if (stats.timeline.length === 0) {
+        timelineEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">No copy check records for this student yet.</div>`;
+      } else {
+        timelineEl.innerHTML = stats.timeline.map(item => {
+          const badge = item.status === 'checked'
+            ? `<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[10px]">Checked on ${formatDateReadable(item.checkedAt)}</span>`
+            : item.status === 'incomplete'
+            ? `<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 font-bold text-[10px]">Incomplete (${formatDateReadable(item.checkedAt)})</span>`
+            : item.status === 'missing'
+            ? `<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 font-bold text-[10px]">Not Submitted</span>`
+            : `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">Pending Check</span>`;
+
+          return `
+            <div class="p-3 rounded-xl border border-slate-100 bg-slate-50/60 space-y-1">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-bold text-xs text-slate-800">${escapeHTML(item.title)}</span>
+                ${badge}
+              </div>
+              <p class="text-[10px] text-slate-400">Scheduled Date: ${formatDateReadable(item.schedDate)}</p>
+              ${item.remark ? `<p class="text-[11px] text-indigo-600 font-medium pt-0.5"><i class="fa-regular fa-comment mr-1"></i>${escapeHTML(item.remark)}</p>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('studentDetailModal').classList.remove('hidden');
+    };
+
+    window.closeStudentDetailModal = function() {
+      document.getElementById('studentDetailModal').classList.add('hidden');
+    };
+
+    window.openNewScheduleModal = function() {
+      document.getElementById('schedTitleInput').value = '';
+      document.getElementById('schedDateInput').value = getLocalDateISO();
+      selectBatchPreset('Full Class (Roll 1-38)', 1, 38);
+      document.getElementById('scheduleModal').classList.remove('hidden');
+    };
+
+    window.closeScheduleModal = function() {
+      document.getElementById('scheduleModal').classList.add('hidden');
+    };
+
+    window.selectBatchPreset = function(label, start, end) {
+      appState.selectedBatchLabel = label;
+      document.getElementById('schedStartRoll').value = start;
+      document.getElementById('schedEndRoll').value = end;
+    };
+
+    window.saveNewSchedule = function() {
+      const title = document.getElementById('schedTitleInput').value.trim();
+      const date = document.getElementById('schedDateInput').value;
+      const type = document.getElementById('schedTypeInput').value;
+      const startRoll = parseInt(document.getElementById('schedStartRoll').value, 10) || 1;
+      const endRoll = parseInt(document.getElementById('schedEndRoll').value, 10) || 38;
+
+      if (!title || !date) {
+        showToast('Please enter a chapter title and date');
+        return;
+      }
+      if (!Number.isInteger(startRoll) || !Number.isInteger(endRoll) || startRoll < 1 || endRoll > 38 || startRoll > endRoll) {
+        showToast('Enter a valid roll range from 1 to 38');
+        return;
+      }
+
+      const cls = getCurrentClass();
+      const newSched = {
+        id: 'sched-' + Date.now(),
+        title,
+        date,
+        type,
+        batchLabel: `Roll ${startRoll}–${endRoll}`,
+        startRoll,
+        endRoll,
+        records: {}
+      };
+
+      cls.schedules.push(newSched);
+      appState.selectedSessionId = newSched.id;
+      saveState();
+      closeScheduleModal();
+      renderAll();
+      showToast('Copy check schedule created!');
+    };
+
+    window.openRemarkModal = function(studentId) {
+      appState.activeRemarkStudentId = studentId;
+      const cls = getCurrentClass();
+      const st = cls.students.find(s => s.id === studentId);
+      const sched = cls.schedules.find(s => s.id === appState.selectedSessionId);
+      if (!st || !sched) return;
+
+      document.getElementById('remarkModalTitle').textContent = `Remark for ${st.name} (Roll #${st.roll})`;
+      document.getElementById('remarkInputText').value = sched.records?.[studentId]?.remark || '';
+      document.getElementById('remarkModal').classList.remove('hidden');
+    };
+
+    window.closeRemarkModal = function() {
+      document.getElementById('remarkModal').classList.add('hidden');
+    };
+
+    window.appendQuickRemark = function(text) {
+      const box = document.getElementById('remarkInputText');
+      box.value = box.value ? `${box.value}, ${text}` : text;
+    };
+
+    window.saveStudentRemark = function() {
+      const cls = getCurrentClass();
+      const sched = cls.schedules.find(s => s.id === appState.selectedSessionId);
+      const studentId = appState.activeRemarkStudentId;
+      if (!sched || !studentId) return;
+
+      if (!sched.records) sched.records = {};
+      const today = getLocalDateISO();
+      const existing = sched.records[studentId] || { status: 'checked', checkedAt: today };
+      existing.remark = document.getElementById('remarkInputText').value.trim();
+      sched.records[studentId] = existing;
+
+      saveState();
+      closeRemarkModal();
+      renderCheckStudentList();
+      showToast('Remark saved!');
+    };
+
+    window.openAddStudentModal = function() {
+      const cls = getCurrentClass();
+      document.getElementById('newStudentRoll').value = cls.students.length + 1;
+      document.getElementById('newStudentAdm').value = '';
+      document.getElementById('newStudentName').value = '';
+      document.getElementById('newStudentFather').value = '';
+      document.getElementById('newStudentPhone').value = '';
+      document.getElementById('addStudentModal').classList.remove('hidden');
+    };
+
+    window.closeAddStudentModal = function() {
+      document.getElementById('addStudentModal').classList.add('hidden');
+    };
+
+    window.saveNewStudent = function() {
+      const roll = parseInt(document.getElementById('newStudentRoll').value, 10);
+      const name = document.getElementById('newStudentName').value.trim().toUpperCase();
+      if (!Number.isInteger(roll) || roll < 1 || roll > 38 || !name) {
+        showToast('Enter a student name and a roll number from 1 to 38');
+        return;
+      }
+      const cls = getCurrentClass();
+      if (cls.students.some(st => st.roll === roll)) {
+        showToast(`Roll number ${roll} is already assigned`);
+        return;
+      }
+      cls.students.push({
+        id: 's' + Date.now(),
+        roll,
+        admNo: document.getElementById('newStudentAdm').value.trim() || '—',
+        name,
+        father: document.getElementById('newStudentFather').value.trim().toUpperCase() || '—',
+        mother: '—',
+        phone: document.getElementById('newStudentPhone').value.trim() || '—',
+        sciMarks: '—',
+        pct: '—'
+      });
+      cls.students.sort((a, b) => a.roll - b.roll);
+      saveState();
+      closeAddStudentModal();
+      renderAll();
+      showToast('Student added!');
+    };
+
+    window.deleteScheduleSession = function(schedId) {
+      const cls = getCurrentClass();
+      if (!cls) return;
+      cls.schedules = (cls.schedules || []).filter(s => s.id !== schedId);
+      if (appState.selectedSessionId === schedId) {
+        appState.selectedSessionId = cls.schedules.length > 0 ? cls.schedules[cls.schedules.length - 1].id : null;
+      }
+      saveState();
+      renderAll();
+      showToast('Schedule deleted!');
+    };
+
+    window.openClearDataModal = function() {
+      const urlInput = document.getElementById('driveWebAppUrlInput');
+      if (urlInput) urlInput.value = getDriveWebAppUrl();
+      document.getElementById('clearDataModal').classList.remove('hidden');
+    };
+
+    window.closeClearDataModal = function() {
+      document.getElementById('clearDataModal').classList.add('hidden');
+    };
+
+    window.clearAllSchedulesAndHistory = function() {
+      const cls = getCurrentClass();
+      if (!cls) return;
+      cls.schedules = [];
+      cls.students = JSON.parse(JSON.stringify(OFFICIAL_IXC_38_STUDENTS));
+      appState.selectedSessionId = null;
+      saveState();
+      closeClearDataModal();
+      renderAll();
+      showToast('All schedules & copy check records cleared!');
+    };
+
+    window.clearCurrentSessionMarks = function() {
+      const cls = getCurrentClass();
+      const sched = cls?.schedules.find(s => s.id === appState.selectedSessionId);
+      if (!sched) {
+        closeClearDataModal();
+        showToast('No active session selected');
+        return;
+      }
+      sched.records = {};
+      saveState();
+      closeClearDataModal();
+      renderAll();
+      showToast('Current session marks cleared!');
+    };
+
+    window.factoryResetApp = function() {
+      localStorage.removeItem(STORAGE_KEY);
+      appState.classes = createInitialState();
+      const cls = getCurrentClass();
+      appState.selectedSessionId = cls.schedules.length > 0 ? cls.schedules[cls.schedules.length - 1].id : null;
+      saveState();
+      closeClearDataModal();
+      renderAll();
+      showToast('Restored default demo data & 38 students!');
+    };
+
+    window.exportFullBackup = function() {
+      try {
+        const payload = {
+          app: 'CopyCheck',
+          formatVersion: 1,
+          exportedAt: new Date().toISOString(),
+          classes: appState.classes
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const stamp = getLocalDateISO();
+        link.href = url;
+        link.download = `CopyCheck_Backup_${stamp}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('Full backup downloaded. Keep it somewhere safe.');
+      } catch (e) {
+        console.error('Backup export failed:', e);
+        showToast('Backup could not be created. Check browser permissions.');
+      }
+    };
+
+    function validateBackupClasses(classes) {
+      if (!Array.isArray(classes) || classes.length === 0) return false;
+      return classes.every(cls =>
+        cls && typeof cls.id === 'string' && typeof cls.name === 'string' &&
+        Array.isArray(cls.students) && Array.isArray(cls.schedules) &&
+        cls.students.every(st => st && Number.isFinite(Number(st.roll)) && typeof st.name === 'string') &&
+        cls.schedules.every(sched => sched && typeof sched.id === 'string' &&
+          typeof sched.title === 'string' && sched.records && typeof sched.records === 'object' && !Array.isArray(sched.records))
+      );
+    }
+
+    window.importFullBackup = async function(event) {
+      const input = event?.target;
+      const file = input?.files?.[0];
+      if (!file) return;
+      try {
+        if (file.size > 10 * 1024 * 1024) {
+          showToast('Backup file is too large (maximum 10 MB).');
+          return;
+        }
+        const parsed = JSON.parse(await file.text());
+        const classes = Array.isArray(parsed) ? parsed : parsed?.classes;
+        if (!validateBackupClasses(classes)) {
+          showToast('This file is not a valid CopyCheck backup. No data was changed.');
+          return;
+        }
+        const confirmed = window.confirm('Restore this backup? Current CopyCheck data will be replaced. A recovery copy of current data will be kept in this browser first.');
+        if (!confirmed) return;
+
+        try {
+          localStorage.setItem(STORAGE_KEY + '_pre_restore_backup', JSON.stringify({
+            app: 'CopyCheck', formatVersion: 1, savedAt: new Date().toISOString(), classes: appState.classes
+          }));
+        } catch (backupError) {
+          console.error('Could not save pre-restore recovery snapshot:', backupError);
+          showToast('Restore cancelled: unable to preserve current data in browser storage. Download a backup first.');
+          return;
+        }
+
+        const restored = JSON.parse(JSON.stringify(classes));
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
+        } catch (storageError) {
+          console.error('Could not persist restored backup:', storageError);
+          showToast('Restore failed: browser storage is unavailable or full. Current data remains loaded.');
+          return;
+        }
+        appState.classes = restored;
+        appState.activeClassId = restored.some(c => c.id === appState.activeClassId)
+          ? appState.activeClassId : restored[0].id;
+        appState.selectedSessionId = null;
+        const activeClass = getCurrentClass();
+        if (activeClass?.schedules?.length) {
+          appState.selectedSessionId = activeClass.schedules[activeClass.schedules.length - 1].id;
+        }
+        saveState();
+        renderAll();
+        closeClearDataModal();
+        showToast('Backup restored successfully.');
+      } catch (e) {
+        console.error('Backup restore failed:', e);
+        showToast('Could not read this backup file. No import completed.');
+      } finally {
+        if (input) input.value = '';
+      }
+    };
+
+    window.exportCurrentClassCSV = function() {
+      const cls = getCurrentClass();
+      const headers = ['Roll No', 'Admission No', 'Student Name', 'Father Name', 'Contact No', 'Times Checked', 'Incomplete', 'Missed', 'Score (Out of 3)', 'Last Checked Date'];
+      const csvCell = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
+      const rows = cls.students.map(st => {
+        const stats = getStudentStats(st, cls.schedules);
+        const copyMark = getCopyCorrectionMarks(stats);
+        return [
+          st.roll, st.admNo, st.name, st.father, st.phone,
+          stats.checked, stats.incomplete, stats.missing,
+          copyMark,
+          stats.lastCheckedDate || 'Never'
+        ].map(csvCell).join(',');
+      });
+
+      const csvContent = '\uFEFF' + [headers.map(csvCell).join(','), ...rows].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Class_IX_C_CopyCheck_Report.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast('CSV Report (with 3-Mark Score) Downloaded!');
+    };
+
+    function setFortnightReportDates() {
+      const end = new Date();
+      const start = new Date(end);
+      start.setDate(start.getDate() - 13);
+      document.getElementById('reportStartDate').value = getLocalDateISO(start);
+      document.getElementById('reportEndDate').value = getLocalDateISO(end);
+      renderParentReports();
+    }
+
+    function getParentReportData(student, cls, startDate, endDate) {
+      const relevant = (cls.schedules || []).filter(s => s.date && s.date >= startDate && s.date <= endDate && student.roll >= Number(s.startRoll) && student.roll <= Number(s.endRoll));
+      const result = { checked: [], incomplete: [], missed: [], unrecorded: [] };
+      relevant.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+      relevant.forEach(s => {
+        const rec = (s.records || {})[student.id];
+        const item = { title: s.title || 'Copy correction', date: s.date, remark: rec?.remark || '' };
+        if (!rec || !rec.status || rec.status === 'unmarked') result.unrecorded.push(item);
+        else if (rec.status === 'checked') result.checked.push(item);
+        else if (rec.status === 'incomplete') result.incomplete.push(item);
+        else if (rec.status === 'missing') result.missed.push(item);
+        else result.unrecorded.push(item);
+      });
+      return { ...result, total: relevant.length };
+    }
+
+    function buildParentWhatsAppMessage(student, cls, report, startDate, endDate) {
+      const overallStats = getStudentStats(student, cls.schedules);
+      const copyMark = getCopyCorrectionMarks(overallStats);
+      const lines = [
+        `Dear Parent/Guardian of ${student.name},`,
+        '',
+        `CopyCheck progress report — ${cls.name}`,
+        `Period: ${formatDateReadable(startDate)} to ${formatDateReadable(endDate)}`,
+        '',
+        `Notebooks checked: ${report.checked.length}`,
+        `Incomplete work: ${report.incomplete.length}`,
+        `Notebook missed/not submitted: ${report.missed.length}`,
+        `Status not recorded: ${report.unrecorded.length}`,
+        `Current Internal Copy Score: ${copyMark === 'N/A' ? 'Not Graded' : `${copyMark} / 3.0`}`
+      ];
+      const addItems = (label, items) => {
+        if (!items.length) return;
+        lines.push('', `${label}:`);
+        items.forEach(item => lines.push(`• ${formatDateReadable(item.date)} — ${item.title}${item.remark ? ` (Remark: ${item.remark})` : ''}`));
+      };
+      addItems('Incomplete work', report.incomplete);
+      addItems('Missed/not submitted', report.missed);
+      addItems('Awaiting teacher record', report.unrecorded);
+      lines.push('', 'Please help your child complete any pending work and bring the required notebook for the next check.', '', 'Regards,', 'Vaibhav Bhatt (Class Teacher, IX-C)');
+      return lines.join('\n');
+    }
+
+    function openParentWhatsApp(phone, message) {
+      const digits = String(phone || '').replace(/\D/g, '');
+      if (!digits) {
+        showToast('No parent phone number saved for this student.');
+        return;
+      }
+      const international = digits.length === 10 ? '91' + digits : digits;
+      if (international.length < 11 || international.length > 15) {
+        showToast('Please verify this parent phone number in the roster.');
+        return;
+      }
+      const url = `https://wa.me/${international}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    window.openParentReport = function(studentId) {
+      const cls = getCurrentClass();
+      const student = (cls.students || []).find(s => s.id === studentId);
+      const startDate = document.getElementById('reportStartDate')?.value;
+      const endDate = document.getElementById('reportEndDate')?.value;
+      if (!student || !startDate || !endDate || startDate > endDate) {
+        showToast('Please select a valid report date range.');
+        return;
+      }
+      const report = getParentReportData(student, cls, startDate, endDate);
+      if (!report.total) {
+        showToast('No scheduled copy checks for this student in this date range.');
+        return;
+      }
+      openParentWhatsApp(student.phone, buildParentWhatsAppMessage(student, cls, report, startDate, endDate));
+    };
+
+    window.copyParentReport = async function(studentId) {
+      const cls = getCurrentClass();
+      const student = (cls.students || []).find(s => s.id === studentId);
+      const startDate = document.getElementById('reportStartDate')?.value;
+      const endDate = document.getElementById('reportEndDate')?.value;
+      if (!student || !startDate || !endDate || startDate > endDate) return showToast('Please select a valid report date range.');
+      const report = getParentReportData(student, cls, startDate, endDate);
+      const message = buildParentWhatsAppMessage(student, cls, report, startDate, endDate);
+      try {
+        await navigator.clipboard.writeText(message);
+        showToast('Parent report copied to clipboard.');
+      } catch (_) {
+        window.prompt('Copy the parent report text:', message);
+      }
+    };
+
+    function renderParentReports() {
+      const list = document.getElementById('parentReportsList');
+      const summary = document.getElementById('parentReportSummary');
+      if (!list || !summary) return;
+      const startInput = document.getElementById('reportStartDate');
+      const endInput = document.getElementById('reportEndDate');
+      if (!startInput.value || !endInput.value) {
+        const end = new Date();
+        const start = new Date(end);
+        start.setDate(start.getDate() - 13);
+        startInput.value = getLocalDateISO(start);
+        endInput.value = getLocalDateISO(end);
+      }
+      const startDate = startInput.value;
+      const endDate = endInput.value;
+      if (startDate > endDate) {
+        summary.innerHTML = '<span class="text-rose-700 font-semibold">The start date must be on or before the end date.</span>';
+        list.innerHTML = '';
+        return;
+      }
+      const cls = getCurrentClass();
+      const reports = (cls.students || []).map(student => ({ student, report: getParentReportData(student, cls, startDate, endDate) }));
+      const active = reports.filter(x => x.report.total > 0);
+      const missingPhone = active.filter(x => !String(x.student.phone || '').replace(/\D/g, '')).length;
+      const totals = active.reduce((acc, x) => {
+        acc.checked += x.report.checked.length;
+        acc.incomplete += x.report.incomplete.length;
+        acc.missed += x.report.missed.length;
+        acc.unrecorded += x.report.unrecorded.length;
+        return acc;
+      }, { checked: 0, incomplete: 0, missed: 0, unrecorded: 0 });
+      summary.innerHTML = `<div class="font-bold text-slate-800 mb-1">${active.length} students with scheduled checks</div><div class="grid grid-cols-2 gap-2 mt-2"><div class="rounded-lg bg-emerald-50 p-2"><div class="text-emerald-800 font-bold">${totals.checked}</div><div class="text-emerald-700">Checked</div></div><div class="rounded-lg bg-amber-50 p-2"><div class="text-amber-800 font-bold">${totals.incomplete}</div><div class="text-amber-700">Incomplete</div></div><div class="rounded-lg bg-rose-50 p-2"><div class="text-rose-800 font-bold">${totals.missed}</div><div class="text-rose-700">Missed/not submitted</div></div><div class="rounded-lg bg-slate-100 p-2"><div class="text-slate-800 font-bold">${totals.unrecorded}</div><div class="text-slate-600">Status not recorded</div></div></div><div class="mt-2 text-[10px] text-slate-500">${missingPhone} student(s) need a parent phone number. Reports include only scheduled sessions within the selected period and each student's assigned roll range.</div>`;
+      if (!active.length) {
+        list.innerHTML = '<div class="bg-white rounded-2xl p-4 border border-slate-100 text-xs text-slate-500">No scheduled copy checks for this class in the selected period. Try a wider date range or create schedules first.</div>';
+        return;
+      }
+      list.innerHTML = active.sort((a,b) => Number(a.student.roll) - Number(b.student.roll)).map(({ student, report }) => {
+        const phone = String(student.phone || '').replace(/\D/g, '');
+        const phoneValid = phone.length >= 10;
+        const overallStats = getStudentStats(student, cls.schedules);
+        const copyMark = getCopyCorrectionMarks(overallStats);
+        const statusLine = `<span class="text-emerald-700">${report.checked.length} checked</span> · <span class="text-amber-700">${report.incomplete.length} incomplete</span> · <span class="text-rose-700">${report.missed.length} missed</span> · <strong class="text-indigo-700">Score: ${copyMark}/3</strong>`;
+        return `<article class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3.5 space-y-2.5"><div class="flex items-start justify-between gap-2"><div class="flex items-start gap-2.5"><div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">${escapeHTML(student.roll)}</div><div><div class="text-xs font-bold text-slate-800">${escapeHTML(student.name)}</div><div class="text-[10px] text-slate-500">Adm: ${escapeHTML(student.admNo || '—')} · ${escapeHTML(phone ? phone : 'No parent number')}</div></div></div><span class="text-[10px] px-2 py-1 rounded-full ${report.missed.length || report.incomplete.length ? 'bg-amber-50 text-amber-800' : 'bg-emerald-50 text-emerald-800'}">${report.missed.length || report.incomplete.length ? 'Follow-up' : 'On track'}</span></div><div class="text-[10px] leading-relaxed">${statusLine}</div><div class="text-[10px] text-slate-500">${report.total} scheduled session(s) in period${report.unrecorded.length ? ` · ${report.unrecorded.length} status not recorded` : ''}</div><div class="grid grid-cols-2 gap-2"><button onclick="openParentReport('${String(student.id).replace(/'/g, '')}')" ${phoneValid ? '' : 'disabled'} class="py-2.5 rounded-xl ${phoneValid ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-100 text-slate-400 cursor-not-allowed'} font-semibold text-[11px]"><i class="fa-brands fa-whatsapp mr-1"></i> Review in WhatsApp</button><button onclick="copyParentReport('${String(student.id).replace(/'/g, '')}')" class="py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-[11px]"><i class="fa-regular fa-copy mr-1"></i> Copy Message</button></div></article>`;
+      }).join('');
+    }
+
+    function renderAll() {
+      renderClassSelector();
+      renderScheduleTab();
+      renderCheckTab();
+      renderStudentHistoryList();
+      renderRosterList();
+      renderParentReports();
+      updateDriveStatusUI('idle');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      const cls = getCurrentClass();
+      if (cls.schedules.length > 0) {
+        appState.selectedSessionId = cls.schedules[cls.schedules.length - 1].id;
+      }
+      renderAll();
+    });
+  </script>
+</body>
+</html>
